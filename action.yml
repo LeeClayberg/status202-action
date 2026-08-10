@@ -1,4 +1,4 @@
-name: 'Status 202'
+name: 'Status 202 Progress Reporter'
 description: 'Report progress from a GitHub workflow to a Status 202 tracker.'
 author: 'Status 202'
 branding:
