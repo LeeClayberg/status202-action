@@ -1,0 +1,79 @@
+name: 'Status 202'
+description: 'Report progress from a GitHub workflow to a Status 202 tracker.'
+author: 'Status 202'
+branding:
+  icon: 'activity'
+  color: 'orange'
+
+inputs:
+  token:
+    description: 'Tracker URL token. Store it in a repo secret and pass it here.'
+    required: true
+  api-key:
+    description: 'Account API key. Only needed for apiKey-mode trackers.'
+    required: false
+  percent:
+    description: 'Percent complete, 0-100. Use this for percent-mode trackers.'
+    required: false
+  value:
+    description: 'Raw value. Use this for range-mode trackers.'
+    required: false
+  command:
+    description: 'Shell command whose stdout is the payload. Overrides percent/value.'
+    required: false
+  base-url:
+    description: 'API base URL.'
+    required: false
+    default: 'https://api.status202.dev/v1'
+  cli-version:
+    description: 'Version of the status202 npm package to run.'
+    required: false
+    default: 'latest'
+  node-version:
+    description: 'Node version used to run the CLI.'
+    required: false
+    default: '20'
+
+runs:
+  using: 'composite'
+  steps:
+    - uses: actions/setup-node@v4
+      with:
+        node-version: ${{ inputs.node-version }}
+
+    - name: Report progress to Status 202
+      shell: bash
+      # Everything crosses into the script through env, never through inline
+      # ${{ }} interpolation — an expression expanded straight into `run:`
+      # is a shell-injection sink for anyone who can influence its value.
+      env:
+        S202_TOKEN: ${{ inputs.token }}
+        S202_API_KEY: ${{ inputs.api-key }}
+        S202_PERCENT: ${{ inputs.percent }}
+        S202_VALUE: ${{ inputs.value }}
+        S202_COMMAND: ${{ inputs.command }}
+        S202_BASE_URL: ${{ inputs.base-url }}
+        S202_CLI_VERSION: ${{ inputs.cli-version }}
+      run: |
+        set -euo pipefail
+
+        # The CLI has no "just report this number" mode — it always wants a
+        # command to run — so a literal value is fed in as `echo <n>`.
+        if [ -n "${S202_COMMAND}" ]; then
+          CMD="${S202_COMMAND}"
+        elif [ -n "${S202_VALUE}" ]; then
+          CMD="echo ${S202_VALUE}"
+        elif [ -n "${S202_PERCENT}" ]; then
+          CMD="echo ${S202_PERCENT}"
+        else
+          echo "::error::Provide one of: percent, value, or command."
+          exit 1
+        fi
+
+        ARGS=(--token "${S202_TOKEN}" --command "${CMD}" --push --once
+              --base-url "${S202_BASE_URL}")
+        if [ -n "${S202_API_KEY}" ]; then
+          ARGS+=(--api-key "${S202_API_KEY}")
+        fi
+
+        npx --yes "status202@${S202_CLI_VERSION}" "${ARGS[@]}"
