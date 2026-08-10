@@ -35,14 +35,14 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: status202/status202-action@v1
+      - uses: LeeClayberg/status202-action@v1
         with:
           token: ${{ secrets.STATUS202_TOKEN }}
           percent: 0
 
       - run: ./build.sh
 
-      - uses: status202/status202-action@v1
+      - uses: LeeClayberg/status202-action@v1
         if: success()
         with:
           token: ${{ secrets.STATUS202_TOKEN }}
@@ -54,7 +54,7 @@ jobs:
 Anything you can print on stdout works — here, test coverage:
 
 ```yaml
-- uses: status202/status202-action@v1
+- uses: LeeClayberg/status202-action@v1
   with:
     token: ${{ secrets.COVERAGE_TRACKER_TOKEN }}
     command: "jq -r '.total.lines.pct' coverage/coverage-summary.json"
@@ -67,7 +67,7 @@ tracker to 100%, and Connect posts to Slack, Discord, Teams, Jira, or your own w
 No extra workflow steps — the notification is configured once, in the app.
 
 ```yaml
-- uses: status202/status202-action@v1
+- uses: LeeClayberg/status202-action@v1
   with:
     token: ${{ secrets.STATUS202_TOKEN }}
     percent: 100
