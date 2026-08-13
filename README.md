@@ -1,4 +1,4 @@
-<p align="center"><img src="https://status202.dev/icons/Icon-192.png" width="96" height="96" alt="status202 logo"></p>
+<p align="center"><img src="https://status202.dev/brand/logo.png" width="96" height="96" alt="status202 logo"></p>
 
 # Status 202 — GitHub Action
 
