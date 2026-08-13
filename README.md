@@ -1,3 +1,5 @@
+<p align="center"><img src="https://status202.dev/icons/Icon-192.png" width="96" height="96" alt="status202 logo"></p>
+
 # Status 202 — GitHub Action
 
 Report progress from a GitHub workflow to a [Status 202](https://status202.dev) tracker.
